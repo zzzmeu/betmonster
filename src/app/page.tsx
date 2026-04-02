@@ -129,24 +129,24 @@ export default function Dashboard() {
           />
           <SourceCard
             icon={Activity}
-            title="Flashscore / API-Football"
+            title="TheSportsDB"
             subtitle="Team Form & H2H"
-            status="coming"
-            description="Last 5 match form, head-to-head records, home/away splits, injuries, league standings. The statistical backbone."
+            status="live"
+            description="Last 5 match form, head-to-head records, goals scored/conceded. Free API — no key needed. Covers all major leagues."
           />
           <SourceCard
             icon={BarChart3}
-            title="Odds-API / OddsPortal"
-            subtitle="Market Odds Comparison"
-            status="coming"
-            description="Multi-bookmaker odds comparison. Sharp line movements signal smart money. Fair odds calculation for value detection."
+            title="The Odds API"
+            subtitle="Multi-Bookmaker Odds"
+            status="live"
+            description="Fair odds from 40+ bookmakers (EU region). Sharp line detection (Pinnacle/Betfair). Positive EV identification."
           />
           <SourceCard
             icon={Globe}
             title="Polymarket"
             subtitle="Prediction Markets"
-            status="coming"
-            description="Decentralized prediction market probabilities. Independent signal from crowd wisdom — not bookmaker models."
+            status="live"
+            description="Decentralized prediction market probabilities for major matches. Independent signal from crowd wisdom."
           />
         </div>
       </div>
