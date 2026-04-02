@@ -43,12 +43,15 @@ Typersi resets rankings monthly. We become the persistent memory — accumulatin
 - [x] First enrichment: 5 tips enriched, 3 with H2H data
 - [ ] ODDS_API_KEY env var needed for odds data (free tier: 500 credits/mo)
 
-### Phase 4: Signal Fusion & Curation `pending`
-- [ ] Live signal fusion scoring per pending tip
-- [ ] Daily curated picks generation with real enrichment
+### Phase 4: Signal Fusion & Curation 🔄 `in_progress`
+- [x] Signal fusion reweighted: 60% tipster / 25% form / 15% odds
+- [x] Minimum 10 tips for meaningful tipster score
+- [x] Removed Polymarket (unreliable for daily leagues)
+- [x] Tipster leaderboard on dashboard (current month + all-time)
+- [x] Pick cards show 3 signals with weight labels
+- [ ] Live curated picks generation (wired to DB)
 - [ ] Consensus detection (multiple tipsters on same match)
 - [ ] Kelly criterion position sizing suggestions
-- [ ] Reasoning generation per pick
 
 ### Phase 5: Performance Loop `pending`
 - [ ] Auto-resolve curated picks (check results next day)
