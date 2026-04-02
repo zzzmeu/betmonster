@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🦴 BetMonster
+
+**Tipster intelligence platform** — separating signal from noise in sports betting.
+
+Scrapes tipster data from typersi.com, builds Bayesian-rated profiles, cross-references picks with team form + odds movement + prediction markets, and delivers a curated daily shortlist of high-confidence picks.
+
+## Architecture
+
+### Three-Layer System
+
+1. **Layer 1: Tipster Intelligence** — Bayesian rating adjusted for sample size, odds-weighted ROI, consistency scoring, specialization detection
+2. **Layer 2: Match Verification** — Team form (Flashscore), odds comparison (fair value calc), Polymarket data
+3. **Layer 3: Signal Fusion** — Weighted composite from 4 independent signals, only surfaces picks above 65% confidence
+
+### Tech Stack
+
+- **Next.js 15** (App Router, TypeScript)
+- **Tailwind CSS + shadcn/ui** — Dark theme, data-dense UI
+- **Supabase** — PostgreSQL database
+- **Recharts** — Performance graphs
+- **Cheerio** — HTML scraping
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install
+npm install
+
+# Set up environment
+cp .env.example .env.local
+# Fill in Supabase credentials
+
+# Run database schema
+# Execute supabase/schema.sql in your Supabase SQL editor
+
+# Dev
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Pages
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Route | Description |
+|-------|-------------|
+| `/` | Dashboard — today's top curated picks |
+| `/tipsters` | All tipsters ranked by Bayesian rating |
+| `/tipsters/[id]` | Individual profile with charts + history |
+| `/picks` | All today's picks with analysis |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## API Routes
 
-## Learn More
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/api/scrape` | POST | Trigger scrape of typersi.com |
+| `/api/tipsters` | GET | Fetch all tipsters |
+| `/api/picks` | GET | Fetch today's curated picks |
 
-To learn more about Next.js, take a look at the following resources:
+## Scoring
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Bayesian Rating:** `(C × m + Σprofit) / (C + n)` where C=10 (prior weight), m=0 (prior mean)
+- Prevents tipsters with 2 lucky wins from ranking above consistent performers with 100+ tips
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Composite Confidence:**
+- Tipster credibility: 30%
+- Form analysis: 25%
+- Odds value (EV): 25%
+- Market consensus: 20%
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
