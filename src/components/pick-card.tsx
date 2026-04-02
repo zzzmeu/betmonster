@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ConfidenceBadge } from './confidence-badge';
 import { TierBadge } from './tier-badge';
 import type { CuratedPick } from '@/types';
-import { Trophy, TrendingUp, BarChart, Users } from 'lucide-react';
+import { Trophy, TrendingUp, BarChart } from 'lucide-react';
 
 interface PickCardProps {
   pick: CuratedPick;
@@ -43,11 +43,10 @@ export function PickCard({ pick }: PickCardProps) {
         </div>
 
         {/* Signal breakdown */}
-        <div className="grid grid-cols-4 gap-2 mb-3">
-          <SignalBar icon={Trophy} label="Tipster" value={pick.tipster_signal} />
-          <SignalBar icon={TrendingUp} label="Form" value={pick.form_signal} />
-          <SignalBar icon={BarChart} label="Value" value={pick.odds_value_signal} />
-          <SignalBar icon={Users} label="Market" value={pick.market_signal} />
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          <SignalBar icon={Trophy} label="Tipster (60%)" value={pick.tipster_signal} />
+          <SignalBar icon={TrendingUp} label="Form (25%)" value={pick.form_signal} />
+          <SignalBar icon={BarChart} label="Value (15%)" value={pick.odds_value_signal} />
         </div>
 
         {pick.reasoning && (

@@ -4,7 +4,6 @@
 
 import { enrichMatch, type TeamForm, type H2HData } from './sports-db';
 import { getAllSoccerOdds, findMatchOdds, type MatchOdds } from './odds-api';
-import { getMatchProbability } from './polymarket';
 import { createClient } from '@supabase/supabase-js';
 
 export interface EnrichmentResult {
@@ -94,26 +93,7 @@ export async function enrichTip(
     sources.push('odds-api');
   }
 
-  // 3. Polymarket — prediction market probability
-  let polymarketProb: number | null = null;
-  try {
-    const polyData = await getMatchProbability(teams.home, teams.away);
-    if (polyData) {
-      const tipLower = tipType.toLowerCase();
-      if (tipLower === '1' || tipLower === 'home') {
-        polymarketProb = polyData.homeWinProb;
-      } else if (tipLower === '2' || tipLower === 'away') {
-        polymarketProb = polyData.awayWinProb;
-      } else if (tipLower === 'x' || tipLower === 'draw') {
-        polymarketProb = polyData.drawProb;
-      }
-      if (polymarketProb !== null) sources.push('polymarket');
-    }
-  } catch (e) {
-    console.log('[enrich] Polymarket unavailable:', e);
-  }
-
-  return { tipId, homeForm, awayForm, h2h, fairOdds, oddsMovement, polymarketProb, sources };
+  return { tipId, homeForm, awayForm, h2h, fairOdds, oddsMovement, polymarketProb: null, sources };
 }
 
 /**

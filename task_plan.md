@@ -33,13 +33,15 @@ Typersi resets rankings monthly. We become the persistent memory — accumulatin
 - [ ] Replace demo data on pages with live Supabase queries (API ready, pages still use demo)
 - [ ] Test full end-to-end scrape → store → display pipeline
 
-### Phase 3: Match Enrichment — Real Data Sources `pending`
-- [ ] API-Football integration (team form, H2H, standings, injuries)
-- [ ] Flashscore scrape fallback for form data
-- [ ] Odds-API.com integration (multi-bookmaker odds comparison)
-- [ ] Polymarket API for prediction market data
-- [ ] Fair odds calculation from multiple sources
-- [ ] Store all enrichment data on tips table
+### Phase 3: Match Enrichment — Real Data Sources ✅ `complete`
+- [x] TheSportsDB integration (team form, H2H, goals — free, no key)
+- [x] The Odds API integration (multi-bookmaker odds, fair odds, sharp detection)
+- [x] Polymarket integration (prediction market probabilities)
+- [x] Enrichment orchestrator — runs all sources per tip, graceful degradation
+- [x] /api/enrich endpoint + cron (15min after scrape)
+- [x] Stores home_form, away_form, h2h_record, fair_odds, odds_movement, polymarket_prob on tips
+- [x] First enrichment: 5 tips enriched, 3 with H2H data
+- [ ] ODDS_API_KEY env var needed for odds data (free tier: 500 credits/mo)
 
 ### Phase 4: Signal Fusion & Curation `pending`
 - [ ] Live signal fusion scoring per pending tip

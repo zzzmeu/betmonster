@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PickCard } from '@/components/pick-card';
-import { Skull, Target, TrendingUp, Zap, Shield, BarChart3, Globe, Layers, Search, Database, Activity, ArrowRight } from 'lucide-react';
+import { Skull, Target, TrendingUp, Zap, Shield, BarChart3, Layers, Database, Activity, ArrowRight, Trophy } from 'lucide-react';
 import type { CuratedPick, Tip, Tipster } from '@/types';
 import Link from 'next/link';
 
@@ -116,10 +116,88 @@ export default function Dashboard() {
         </Card>
       </Link>
 
+      {/* Tipster Leaderboard */}
+      <div>
+        <h2 className="text-lg font-bold mb-4 text-zinc-300">Top Tipsters</h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Current Month */}
+          <Card className="bg-zinc-900/50 border-zinc-800">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-zinc-400 flex items-center gap-2">
+                <Zap className="h-3.5 w-3.5 text-[#39FF14]" />
+                This Month (Typersi Live)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {[
+                  { rank: 1, name: 'outlaw76', profit: 137.1, tips: 2, wr: 100 },
+                  { rank: 2, name: 'Baloniarz', profit: 132.0, tips: 2, wr: 100 },
+                  { rank: 3, name: 'Kolba1', profit: 97.5, tips: 1, wr: 100 },
+                  { rank: 4, name: 'zajac', profit: 94.8, tips: 2, wr: 100 },
+                  { rank: 5, name: 'robcamp78', profit: 77.5, tips: 2, wr: 100 },
+                ].map(t => (
+                  <div key={t.rank} className="flex items-center justify-between py-1.5 border-b border-zinc-800/50 last:border-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-zinc-600 font-mono text-xs w-5">#{t.rank}</span>
+                      <span className="text-white text-sm font-medium">{t.name}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs">
+                      <span className="text-zinc-500">{t.tips} tips</span>
+                      <span className="text-zinc-400">{t.wr}%</span>
+                      <span className="text-[#39FF14] font-mono font-bold">+{t.profit.toFixed(0)}u</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[10px] text-zinc-600 mt-2">
+                Month just started — rankings volatile. BetMonster&apos;s Bayesian rating adjusts for small samples.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* All-Time (BetMonster tracked) */}
+          <Card className="bg-zinc-900/50 border-zinc-800">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-zinc-400 flex items-center gap-2">
+                <Trophy className="h-3.5 w-3.5 text-amber-400" />
+                All-Time Best (BetMonster Rating)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {[
+                  { rank: 1, name: 'outlaw76', rating: 11.43, tips: 2, tier: 'unranked' },
+                  { rank: 2, name: 'Baloniarz', rating: 11.0, tips: 2, tier: 'unranked' },
+                  { rank: 3, name: 'Kolba1', rating: 8.86, tips: 1, tier: 'unranked' },
+                  { rank: 4, name: 'zajac', rating: 7.9, tips: 2, tier: 'unranked' },
+                  { rank: 5, name: 'robcamp78', rating: 6.46, tips: 2, tier: 'unranked' },
+                ].map(t => (
+                  <div key={t.rank} className="flex items-center justify-between py-1.5 border-b border-zinc-800/50 last:border-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-zinc-600 font-mono text-xs w-5">#{t.rank}</span>
+                      <span className="text-white text-sm font-medium">{t.name}</span>
+                      <Badge variant="outline" className="bg-zinc-800 border-zinc-700 text-zinc-500 text-[9px]">{t.tier}</Badge>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs">
+                      <span className="text-zinc-500">{t.tips} tips</span>
+                      <span className="text-[#39FF14] font-mono font-bold">{t.rating.toFixed(2)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[10px] text-zinc-600 mt-2">
+                Day 1 of tracking. After 30+ days, Bayesian ratings stabilize. Tiers unlock at 10+ tips.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       {/* Data Sources / Enrichment Pipeline */}
       <div>
         <h2 className="text-lg font-bold mb-4 text-zinc-300">Intelligence Pipeline</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid md:grid-cols-3 gap-3">
           <SourceCard
             icon={Database}
             title="Typersi.com"
@@ -141,13 +219,6 @@ export default function Dashboard() {
             status="live"
             description="Fair odds from 40+ bookmakers (EU region). Sharp line detection (Pinnacle/Betfair). Positive EV identification."
           />
-          <SourceCard
-            icon={Globe}
-            title="Polymarket"
-            subtitle="Prediction Markets"
-            status="live"
-            description="Decentralized prediction market probabilities for major matches. Independent signal from crowd wisdom."
-          />
         </div>
       </div>
 
@@ -160,35 +231,28 @@ export default function Dashboard() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid md:grid-cols-4 gap-4 text-sm">
+          <div className="grid md:grid-cols-3 gap-4 text-sm">
             <SignalExplainer
-              weight={30}
-              label="Tipster Credibility"
+              weight={60}
+              label="Tipster Track Record"
               color="#39FF14"
-              items={['Bayesian rating (sample-size adjusted)', 'Historical ROI across months', 'Consistency score (low variance)', 'Tier classification (Elite → Avoid)']}
+              items={['Bayesian rating (sample-size adjusted)', 'Historical ROI across monthly resets', 'Win rate with minimum 10+ tips', 'Consistency score (low variance)', 'Tier: Elite → Proven → Rising → Avoid', 'Multi-tipster consensus bonus']}
             />
             <SignalExplainer
               weight={25}
-              label="Form Analysis"
+              label="Team Form & H2H"
               color="#3b82f6"
-              items={['Last 5 match results', 'Head-to-head record', 'Home/away performance split', 'Goals scored/conceded trend']}
+              items={['Last 5 match results per team', 'Head-to-head record (3+ meetings)', 'Goals scored/conceded trend', 'Over/under market support']}
             />
             <SignalExplainer
-              weight={25}
+              weight={15}
               label="Odds Value"
               color="#f59e0b"
-              items={['Fair odds from multiple books', 'Positive EV detection', 'Line movement direction', 'Sharp money indicators']}
-            />
-            <SignalExplainer
-              weight={20}
-              label="Market Consensus"
-              color="#8b5cf6"
-              items={['Polymarket probability', 'Multiple tipster agreement', 'Public vs sharp split', 'Implied probability gap']}
+              items={['Fair odds from multiple bookmakers', 'Positive expected value detection', 'Sharp line movement (Pinnacle)', 'Negative EV = auto-penalized']}
             />
           </div>
           <div className="mt-4 p-3 bg-zinc-800/50 rounded-lg text-xs text-zinc-400">
-            <span className="text-[#39FF14] font-bold">Only picks scoring above 65% composite confidence make the cut.</span> We sacrifice volume for accuracy. 
-            Typical output: 3-8 picks per day with 70-85% expected win rate on settled bets.
+            <span className="text-[#39FF14] font-bold">Tipster credibility is 60% of the score.</span> Only picks from top-performing tipsters (10+ tips, positive ROI, proven track record across monthly resets) make the cut. Form and odds validate — the tipster&apos;s history decides.
           </div>
         </CardContent>
       </Card>
