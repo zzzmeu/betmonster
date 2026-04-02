@@ -8,8 +8,17 @@ export const maxDuration = 120; // Allow up to 2 min for full scrape
 export async function POST(request: Request) {
   try {
     const authHeader = request.headers.get('authorization');
-    const expectedKey = process.env.SUPABASE_SERVICE_KEY;
-    if (expectedKey && authHeader !== `Bearer ${expectedKey}`) {
+    const cronSecret = process.env.CRON_SECRET;
+    const serviceKey = process.env.SUPABASE_SERVICE_KEY;
+    
+    // Check auth: cron secret, service key, or x-scrape-key header
+    const scrapeKey = request.headers.get('x-scrape-key');
+    const isAuthed = 
+      (cronSecret && authHeader === `Bearer ${cronSecret}`) ||
+      (serviceKey && authHeader === `Bearer ${serviceKey}`) ||
+      (serviceKey && scrapeKey === serviceKey);
+    
+    if (!isAuthed && (cronSecret || serviceKey)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

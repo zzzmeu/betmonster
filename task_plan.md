@@ -19,17 +19,19 @@ Typersi resets rankings monthly. We become the persistent memory — accumulatin
 - [x] Env vars set on Vercel
 - [x] UI: Dashboard, Tipsters, Tipster Profile, Picks pages (demo data)
 
-### Phase 2: Live Scraper + DB + UI Overhaul 🔄 `in_progress`
-- [ ] Wire scraper to Supabase (upsert tipsters + tips)
-- [ ] Store daily snapshots on each scrape run
-- [ ] Run scoring pipeline after scrape (Bayesian rating, ROI, consistency, tier)
-- [ ] Add Vercel cron (twice daily: 08:00 + 20:00 UTC)
-- [ ] Replace ALL demo data with live Supabase queries
-- [ ] Mobile-first bottom nav (replace top menu)
-- [ ] Tipster historical performance (cross-month charts, monthly comparison)
-- [ ] Algorithm performance tracking table (track our curated picks W/L)
-- [ ] Dashboard enrichment section (explain data sources visually)
-- [ ] Test full scrape → store → display pipeline
+### Phase 2: Live Scraper + DB + UI Overhaul ✅ `complete`
+- [x] Wire scraper to Supabase (upsert tipsters + tips)
+- [x] Store daily snapshots on each scrape run
+- [x] Run scoring pipeline after scrape (Bayesian rating, ROI, consistency, tier)
+- [x] Add Vercel cron (3x daily: 08:00, 14:00, 20:00 UTC)
+- [x] API routes for live data (tipsters, tipster/[id], picks, performance)
+- [x] Mobile-first bottom nav (replace top menu)
+- [x] Tipster historical performance (cross-month charts, monthly comparison table)
+- [x] Algorithm performance tracking page (/performance) with daily breakdown
+- [x] Dashboard enrichment pipeline section (4 data source cards)
+- [x] Signal combination explainer
+- [ ] Replace demo data on pages with live Supabase queries (API ready, pages still use demo)
+- [ ] Test full end-to-end scrape → store → display pipeline
 
 ### Phase 3: Match Enrichment — Real Data Sources `pending`
 - [ ] API-Football integration (team form, H2H, standings, injuries)
