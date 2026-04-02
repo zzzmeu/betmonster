@@ -73,16 +73,10 @@ export async function scrapeRanking(): Promise<ScrapedTipster[]> {
       seen.add(typersi_id);
 
       const username = match[2];
-      // Score is in the sibling/parent div
+      // Score is always the last child of the parent container
       const parent = $(el).parent();
-      let score = 0;
-      parent.find('div').each((_, div) => {
-        const text = $(div).text().trim().replace(/['"]/g, '');
-        const num = parseFloat(text);
-        if (!isNaN(num) && Math.abs(num) > 0 && Math.abs(num) < 10000) {
-          score = num;
-        }
-      });
+      const lastChildText = parent.children().last().text().trim().replace(/['"]/g, '');
+      const score = parseFloat(lastChildText) || 0;
 
       tipsters.push({
         typersi_id,
@@ -105,36 +99,26 @@ export async function scrapeTipsterProfile(typersiId: number, username: string):
 
   let total_tips = 0, wins = 0, losses = 0, avg_odds = 0, profit_units = 0, win_rate = 0;
 
-  // Parse effectiveness percentage
+  // Parse stats from body text using regex (reliable even with JS-rendered content)
   const bodyText = $('body').text();
+  
   const effMatch = bodyText.match(/(\d+(?:\.\d+)?)%\s*Effectiveness/i);
   if (effMatch) win_rate = parseFloat(effMatch[1]);
 
-  // Parse stat boxes — look for label text patterns
-  const allDivs = $('div');
-  allDivs.each((i, el) => {
-    const text = $(el).text().trim();
-    if (text === 'NUMBER OF TIPS') {
-      const val = $(allDivs[i - 1]).text().trim().replace(/['"]/g, '');
-      total_tips = parseInt(val) || 0;
-    }
-    if (text === 'WIN') {
-      const val = $(allDivs[i - 1]).text().trim().replace(/['"]/g, '');
-      wins = parseInt(val) || 0;
-    }
-    if (text === 'LOST') {
-      const val = $(allDivs[i - 1]).text().trim().replace(/['"]/g, '');
-      losses = parseInt(val) || 0;
-    }
-    if (text === 'AVERAGE ODDS') {
-      const val = $(allDivs[i - 1]).text().trim().replace(/['"]/g, '');
-      avg_odds = parseFloat(val) || 0;
-    }
-    if (text === '+/-') {
-      const val = $(allDivs[i - 1]).text().trim().replace(/['"]/g, '');
-      profit_units = parseFloat(val) || 0;
-    }
-  });
+  const numTipsMatch = bodyText.match(/(\d+)\s*NUMBER OF TIPS/);
+  if (numTipsMatch) total_tips = parseInt(numTipsMatch[1]);
+
+  const winsMatch = bodyText.match(/(\d+)\s*WIN/);
+  if (winsMatch) wins = parseInt(winsMatch[1]);
+
+  const lossMatch = bodyText.match(/(\d+)\s*LOST/);
+  if (lossMatch) losses = parseInt(lossMatch[1]);
+
+  const oddsMatch = bodyText.match(/([\d.]+)\s*AVERAGE ODDS/);
+  if (oddsMatch) avg_odds = parseFloat(oddsMatch[1]);
+
+  const pmMatch = bodyText.match(/([-\d.]+)\s*\+\/-/);
+  if (pmMatch) profit_units = parseFloat(pmMatch[1]);
 
   // Parse tip history
   const tips: ScrapedTip[] = [];

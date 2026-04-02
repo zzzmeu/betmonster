@@ -27,27 +27,20 @@ export async function persistScrapeResults(
   for (const t of ranking) {
     const profile = profiles.get(t.typersi_id);
 
-    // Use profile stats if available, otherwise use ranking data
+    // Ranking page gives reliable profit_units; profile may fail (JS-rendered)
     const pStats = profile || { profit_units: 0, total_tips: 0, wins: 0, losses: 0, avg_odds: 0, win_rate: 0 };
-    
-    // The ranking page gives us reliable profit_units even when profile parsing fails
     const profitUnits = pStats.profit_units || t.profit_units || 0;
-    const totalTips = pStats.total_tips || 0;
-    const wins = pStats.wins || 0;
-    const losses = pStats.losses || 0;
-    const winRate = totalTips > 0 ? (wins / totalTips) * 100 : pStats.win_rate || 0;
-    const avgOdds = pStats.avg_odds || 0;
 
     const tipsterData: Record<string, unknown> = {
       typersi_id: t.typersi_id,
       username: t.username,
       profile_url: t.profile_url,
       profit_units: profitUnits,
-      total_tips: totalTips,
-      wins: wins,
-      losses: losses,
-      avg_odds: avgOdds,
-      win_rate: winRate,
+      total_tips: pStats.total_tips || 0,
+      wins: pStats.wins || 0,
+      losses: pStats.losses || 0,
+      avg_odds: pStats.avg_odds || 0,
+      win_rate: pStats.win_rate || 0,
       last_scraped_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -99,7 +92,8 @@ export async function persistScrapeResults(
       .select('*')
       .eq('tipster_id', tipsterId);
 
-    const settledTips = (allTips || []).filter((t: Record<string, unknown>) => t.result === 'win' || t.result === 'loss');
+    const settledTips = (allTips || []).filter((tp: Record<string, unknown>) => tp.result === 'win' || tp.result === 'loss');
+    const totalStoredTips = (allTips || []).length;
     
     if (settledTips.length > 0) {
       // We have resolved tips — use the scoring engine
@@ -112,19 +106,30 @@ export async function persistScrapeResults(
         specialization: scores.specialization,
         win_rate: scores.win_rate,
         profit_units: scores.profit_units,
+        total_tips: settledTips.length,
+        wins: settledTips.filter((tp: Record<string, unknown>) => tp.result === 'win').length,
+        losses: settledTips.filter((tp: Record<string, unknown>) => tp.result === 'loss').length,
       }).eq('id', tipsterId);
-    } else if (totalTips > 0) {
-      // No settled tips in DB yet — use profile/ranking stats for initial Bayesian rating
+    } else {
+      // No settled tips — use ranking page profit_units for Bayesian rating
+      // Use total stored tips OR profile total_tips (whichever is greater)
       const { calculateBayesianRating, calculateTier } = await import('./scoring');
-      const bayesian = calculateBayesianRating(totalTips, profitUnits);
-      const roi = totalTips > 0 ? (profitUnits / (totalTips * 10)) * 100 : 0; // rough estimate (stake=10)
-      const tier = calculateTier({ total_tips: totalTips, bayesian_rating: bayesian, roi, win_rate: winRate });
+      const tipsCount = Math.max(totalStoredTips, pStats.total_tips || 0);
       
-      await db.from('tipsters').update({
-        bayesian_rating: bayesian,
-        roi: roi,
-        tier: tier,
-      }).eq('id', tipsterId);
+      if (profitUnits !== 0 || tipsCount > 0) {
+        const bayesian = calculateBayesianRating(tipsCount || 1, profitUnits);
+        const roi = tipsCount > 0 ? (profitUnits / (tipsCount * 10)) * 100 : 0;
+        const winRate = pStats.win_rate || (profitUnits > 0 ? 60 : 40); // rough estimate
+        const tier = calculateTier({ total_tips: tipsCount, bayesian_rating: bayesian, roi, win_rate: winRate });
+        
+        await db.from('tipsters').update({
+          bayesian_rating: bayesian,
+          roi: roi,
+          tier: tier,
+          profit_units: profitUnits,
+          total_tips: tipsCount,
+        }).eq('id', tipsterId);
+      }
     }
 
     // 4. Save daily snapshot
