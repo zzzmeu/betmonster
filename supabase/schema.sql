@@ -78,6 +78,38 @@ CREATE TABLE curated_picks (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Algorithm performance tracking
+CREATE TABLE algo_performance (
+  id SERIAL PRIMARY KEY,
+  pick_date DATE NOT NULL,
+  total_picks INT DEFAULT 0,
+  wins INT DEFAULT 0,
+  losses INT DEFAULT 0,
+  voids INT DEFAULT 0,
+  pending INT DEFAULT 0,
+  win_rate DECIMAL(5,2) DEFAULT 0,
+  profit_units DECIMAL(8,2) DEFAULT 0,
+  avg_confidence DECIMAL(5,2) DEFAULT 0,
+  avg_odds DECIMAL(5,2) DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(pick_date)
+);
+
+-- Monthly tipster summaries (cross-month comparison)
+CREATE TABLE tipster_monthly (
+  id SERIAL PRIMARY KEY,
+  tipster_id INT REFERENCES tipsters(id) ON DELETE CASCADE,
+  month DATE NOT NULL, -- first day of month
+  total_tips INT DEFAULT 0,
+  wins INT DEFAULT 0,
+  losses INT DEFAULT 0,
+  profit_units DECIMAL(8,2) DEFAULT 0,
+  win_rate DECIMAL(5,2) DEFAULT 0,
+  avg_odds DECIMAL(5,2) DEFAULT 0,
+  rank_end INT, -- their typersi rank at month end
+  UNIQUE(tipster_id, month)
+);
+
 -- Indexes
 CREATE INDEX idx_tips_tipster ON tips(tipster_id);
 CREATE INDEX idx_tips_date ON tips(match_date);
@@ -86,3 +118,5 @@ CREATE INDEX idx_tips_pending ON tips(result) WHERE result = 'pending';
 CREATE INDEX idx_snapshots_tipster_date ON tipster_snapshots(tipster_id, snapshot_date);
 CREATE INDEX idx_curated_date ON curated_picks(pick_date);
 CREATE INDEX idx_tipsters_rating ON tipsters(bayesian_rating DESC);
+CREATE INDEX idx_algo_perf_date ON algo_performance(pick_date);
+CREATE INDEX idx_tipster_monthly ON tipster_monthly(tipster_id, month);
